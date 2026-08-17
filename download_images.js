@@ -1,0 +1,57 @@
+const fs = require('fs');
+const path = require('path');
+const https = require('https');
+
+const products = [
+  {"number":1,"product_name":"R-1234YF Refrigerant 10 lb","price":"$99.99","compare_at_price":"$420.00","discount":"76%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-1234yf.png?v=1786392065","local_image":"images/01-r-1234yf-refrigerant-10-lb.png","product_url":"https://premiumhvac.shop/products/r-1234yf-refrigerant-10-lb"},
+  {"number":2,"product_name":"R-134A Refrigerant 30 lb","price":"$99.99","compare_at_price":"$160.00","discount":"37%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-134a.png?v=1786392058","local_image":"images/02-r-134a-refrigerant-30-lb.png","product_url":"https://premiumhvac.shop/products/r-134a-refrigerant-30-lb"},
+  {"number":3,"product_name":"R-22 Refrigerant 30 lb","price":"$99.99","compare_at_price":"$700.00","discount":"85%","image_url":"https://premiumhvac.shop/cdn/shop/files/R22_0335552c-f4ea-401b-b2ab-c08866b1bf39.png?v=1786392060","local_image":"images/03-r-22-refrigerant-30-lb.png","product_url":"https://premiumhvac.shop/products/r-22-refrigerant-30-lb"},
+  {"number":4,"product_name":"R-32 Refrigerant 20 lb","price":"$99.99","compare_at_price":"","discount":"","image_url":"https://premiumhvac.shop/cdn/shop/files/R-32.png?v=1786392061","local_image":"images/04-r-32-refrigerant-20-lb.png","product_url":"https://premiumhvac.shop/products/r-32-refrigerant-20-lb"},
+  {"number":5,"product_name":"R-404A Refrigerant 24 lb","price":"$99.99","compare_at_price":"$110.00","discount":"9%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-404A.png?v=1786392059","local_image":"images/05-r-404a-refrigerant-24-lb.png","product_url":"https://premiumhvac.shop/products/r-404a-refrigerant-24-lb"},
+  {"number":6,"product_name":"R-407A Refrigerant 25 lb","price":"$99.99","compare_at_price":"$105.00","discount":"4%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-407A.png?v=1786392062","local_image":"images/06-r-407a-refrigerant-25-lb.png","product_url":"https://premiumhvac.shop/products/r-407a-refrigerant-25-lb"},
+  {"number":7,"product_name":"R-407C Refrigerant 25 lb","price":"$99.99","compare_at_price":"","discount":"","image_url":"https://premiumhvac.shop/cdn/shop/files/R-407C.png?v=1786392063","local_image":"images/07-r-407c-refrigerant-25-lb.png","product_url":"https://premiumhvac.shop/products/r-407c-refrigerant-25-lb"},
+  {"number":8,"product_name":"R-410A Refrigerant 25 lb","price":"$99.99","compare_at_price":"","discount":"","image_url":"https://premiumhvac.shop/cdn/shop/files/R-410A.png?v=1786392056","local_image":"images/08-r-410a-refrigerant-25-lb.png","product_url":"https://premiumhvac.shop/products/r-410a-refrigerant-25-lb"},
+  {"number":9,"product_name":"R-421A Refrigerant 25 lb","price":"$99.99","compare_at_price":"$180.00","discount":"44%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-421A.png?v=1786392064","local_image":"images/09-r-421a-refrigerant-25-lb.png","product_url":"https://premiumhvac.shop/products/r-421a-refrigerant-25-lb"},
+  {"number":10,"product_name":"R-422B (NU-22) Refrigerant 25 lb","price":"$99.99","compare_at_price":"$115.00","discount":"13%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-422B.png?v=1786392069","local_image":"images/10-r-422b-nu-22-refrigerant-25-lb.png","product_url":"https://premiumhvac.shop/products/r-422b-nu-22-refrigerant-25-lb"},
+  {"number":11,"product_name":"R-422D MO29 Refrigerant 25 LB","price":"$99.99","compare_at_price":"$230.00","discount":"56%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-422D.png?v=1786392071","local_image":"images/11-r-422d-mo29-refrigerant-25-lb.png","product_url":"https://premiumhvac.shop/products/r-422d-mo29-refrigerant-25-lb-1"},
+  {"number":12,"product_name":"R-438A (MO99) Refrigerant 25 lb","price":"$99.99","compare_at_price":"$130.00","discount":"23%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-438A.png?v=1786392068","local_image":"images/12-r-438a-mo99-refrigerant-25-lb.png","product_url":"https://premiumhvac.shop/products/r-438a-mo99-refrigerant-25-lb"},
+  {"number":13,"product_name":"R-448A Refrigerant 25LB","price":"$99.99","compare_at_price":"$230.00","discount":"56%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-448A.png?v=1786392072","local_image":"images/13-r-448a-refrigerant-25lb.png","product_url":"https://premiumhvac.shop/products/r448a-refrigerant-25lb"},
+  {"number":14,"product_name":"R-449A Refrigerant 25 lb","price":"$99.99","compare_at_price":"$190.00","discount":"47%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-449A.png?v=1786392066","local_image":"images/14-r-449a-refrigerant-25-lb.png","product_url":"https://premiumhvac.shop/products/r-449a-refrigerant-25-lb"},
+  {"number":15,"product_name":"R-454B Refrigerant 20 lb","price":"$99.99","compare_at_price":"$230.00","discount":"56%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-454B.png?v=1786392070","local_image":"images/15-r-454b-refrigerant-20-lb.png","product_url":"https://premiumhvac.shop/products/r-454b-refrigerant-20-lb"},
+  {"number":16,"product_name":"R-507 Refrigerant 25 lb","price":"$99.99","compare_at_price":"$120.00","discount":"16%","image_url":"https://premiumhvac.shop/cdn/shop/files/R-507.png?v=1786392067","local_image":"images/16-r-507-refrigerant-25-lb.png","product_url":"https://premiumhvac.shop/products/r-507-refrigerant-25-lb"}
+];
+
+const imgDir = path.join(__dirname, 'public', 'images');
+if (!fs.existsSync(imgDir)) {
+  fs.mkdirSync(imgDir, { recursive: true });
+}
+
+function download(url, dest) {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(dest);
+    https.get(url, (response) => {
+      response.pipe(file);
+      file.on('finish', () => {
+        file.close(resolve);
+      });
+    }).on('error', (err) => {
+      fs.unlink(dest, () => {});
+      reject(err);
+    });
+  });
+}
+
+async function run() {
+  for (const product of products) {
+    const dest = path.join(__dirname, 'public', product.local_image);
+    console.log(`Downloading ${product.image_url} to ${dest}...`);
+    try {
+      await download(product.image_url, dest);
+      console.log(`Downloaded ${dest}`);
+    } catch (err) {
+      console.error(`Failed to download ${dest}:`, err);
+    }
+  }
+}
+
+run();
