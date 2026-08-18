@@ -4,6 +4,7 @@ import "./globals.css";
 import ConditionalLayout from "@/components/ConditionalLayout";
 import FacebookPixel from "@/components/FacebookPixel";
 import { site } from "@/data/site";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -55,6 +56,7 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col antialiased">
         <FacebookPixel />
         <ConditionalLayout>{children}</ConditionalLayout>
+        <Analytics />
       </body>
     </html>
   );
